@@ -7,12 +7,57 @@ To solve algebraic expressions, we'll take the following steps
 '''
 
 
+def evaluate_tree(root):
+    if (root.value.isnumeric()):
+        return root.value
+    left_side = evaluate_tree(root.left_child)
+    right_side = evaluate_tree(root.right_child)
+
+    return int(evaluate([left_side, right_side], root.value))
+
+
+def print_tree(root, str=[]):  # Inorder traversal gives infix expression
+    if (root != None):
+        if root.left_child:
+            str = str + print_tree(root.left_child, [])
+        str += [root.value]
+        if root.right_child:
+            str = str + print_tree(root.right_child, [])
+
+    return str
+
+
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.left_child = None
+        self.right_child = None
+
+
+def build_expression_tree(expression):
+    expression = expression.split(' ')
+
+    stack = []
+    for idx in range(len(expression)):
+        if (expression[idx]).isnumeric():  # is an operand
+            new_node = Node(expression[idx])
+            stack.append(new_node)
+        else:  # is an operator
+            new_node = Node(expression[idx])
+            new_node.right_child = stack.pop()
+
+            new_node.left_child = stack.pop()
+            stack.append(new_node)
+
+    return stack[0]  # root of expression tree
+
+
 def convert_to_postfix(expression):
     expression = ''.join(expression.split(' '))
 
     precedence_map = {
-        "/": 3,
-        '*': 3,
+        "/": 2,
+        '*': 2,
         '+': 1,
         '-': 1
     }
@@ -51,13 +96,17 @@ def convert_to_postfix(expression):
 
 
 # postfix = convert_to_postfix('(4-1)')
-# postfix = convert_to_postfix('(4 - 1) * (4 / (5 + 2) + 1)')
+postfix = convert_to_postfix('(4 - 1) * (4 / (5 + 2) + 1)')
 # postfix = convert_to_postfix('12 * 3 / 12 + 3')
-postfix = convert_to_postfix('(3 + 3) * 42 / (6 + 12)')
-# postfix = convert_to_postfix('1*(2+3+4)')
-# postfix = convert_to_postfix('3 + 12 * 3 / 12')
+# postfix = convert_to_postfix('(3 + 3) * 42 / (6 + 12)')
+# TREE 12 + 6 / 42 * 3 + 3
+# TREE (12 + 6) / 42 *(3 + 3)
+# TREE 3 + 3 * 42 / 6 + 12
 
-print('Postfix::::::::::::::::', postfix)
+# postfix = convert_to_postfix('1*(2+3+4)')
+postfix = convert_to_postfix('3 + 12 * 3 / 12')
+
+print('Postfix: ', postfix)
 
 
 def evaluate(operands, operator):
@@ -99,5 +148,9 @@ def solve_expression(expression):
 # solved = solve_expression('3 3 + 42 * 6 12 + /')
 solved = solve_expression(' '.join(postfix))
 
+print('SOLUTION STACK: ', solved)
 
-print('SOLUTION:::::::::::', solved)
+expression_tree_root = build_expression_tree(' '.join(postfix))
+
+# print('TREE: ', ' '.join(print_tree(expression_tree_root, [])))
+print('SOLUTION TREE: ', evaluate_tree(expression_tree_root))
