@@ -7,13 +7,22 @@ To solve algebraic expressions, we'll take the following steps
 '''
 
 
+def truncate(num, decimal_places=2):
+    try:
+        if (int(num) == num):
+            return int(num)
+    except OverflowError as e:
+        print('OverflowError! Please try different values:', e)
+    return round(num, decimal_places)
+
+
 def evaluate_expression_tree(root):
-    if (root.value.isnumeric()):
+    if (root.value.replace('.', '').isnumeric()):
         return root.value
     left_side = evaluate_expression_tree(root.left_child)
     right_side = evaluate_expression_tree(root.right_child)
 
-    return int(evaluate([left_side, right_side], root.value))
+    return evaluate([left_side, right_side], root.value)
 
 
 # Inorder traversal gives infix expression
@@ -40,7 +49,7 @@ def build_expression_tree(expression):
 
     stack = []
     for idx in range(len(expression)):
-        if (expression[idx]).isnumeric():  # is an operand
+        if expression[idx].replace('.', '').isnumeric():  # is an operand
             new_node = Node(expression[idx])
             stack.append(new_node)
         else:  # is an operator
@@ -56,23 +65,23 @@ def build_expression_tree(expression):
 def evaluate(operands, operator):
 
     if operator == '/':
-        return int(operands[0]) / int(operands[1])
+        return float(operands[0]) / float(operands[1])
 
     elif operator == '*':
-        return int(operands[0]) * int(operands[1])
+        return float(operands[0]) * float(operands[1])
 
     elif operator == '+':
-        return int(operands[0]) + int(operands[1])
+        return float(operands[0]) + float(operands[1])
 
     elif operator == '-':
-        return int(operands[0]) - int(operands[1])
+        return float(operands[0]) - float(operands[1])
 
 
 def solve_postfix_using_stack(expression):
     expression = expression.split(' ')
     stack = []
     for idx in range(len(expression)):
-        if ((expression[idx]).isnumeric()):
+        if expression[idx].replace('.', '').isnumeric():
             stack.append(expression[idx])
         else:
             operator = expression[idx]
@@ -80,7 +89,7 @@ def solve_postfix_using_stack(expression):
             operand_1 = stack.pop()
             solution = evaluate([operand_1, operand_2], operator)
             stack.append(solution)
-    return int(stack[0])
+    return stack[0]
 
 
 def convert_infix_to_postfix(expression):
@@ -97,9 +106,9 @@ def convert_infix_to_postfix(expression):
     for idx in range(len(expression)):
         if (next > idx):
             continue
-        if ((expression[idx]).isnumeric()):  # is an operand
+        if (expression[idx].isnumeric() or expression[idx] == '.'):  # is an operand
             next = idx + 1
-            while(next < len(expression) and (expression[next]).isnumeric()):
+            while(next < len(expression) and (expression[next].isnumeric() or expression[next] == '.')):
                 next = next + 1
             postfix.append(expression[idx:next])  # add it to postfix
         else:  # is an operator
@@ -135,7 +144,7 @@ def check_operators(expression):
         if (expression[idx].isnumeric()):
             continue
         else:
-            if (expression[idx] != '(' and expression[idx] != ')' and expression[idx] not in valid_operators):
+            if (expression[idx] != '.' and expression[idx] != '(' and expression[idx] != ')' and expression[idx] not in valid_operators):
                 contains_an_invalid_operator = True
             if (expression[idx] in valid_operators):
                 contains_a_valid_operator = True
@@ -146,22 +155,22 @@ def check_operators(expression):
 
 def evaluate_expression(expression):
     expression = ''.join(expression.split(' '))
-
     try:
         check_operators(expression)
         postfix = convert_infix_to_postfix(expression)
 
         print('Postfix: ', postfix)
 
-        print('SOLUTION STACK: ', solve_postfix_using_stack(' '.join(postfix)))
+        print('SOLUTION STACK: ', truncate(
+            solve_postfix_using_stack(' '.join(postfix))))
 
         expression_tree_root = build_expression_tree(' '.join(postfix))
 
         # print('Expression Tree Infix: ', ' '.join(print_expression_tree(expression_tree_root, [])))
         print('SOLUTION EXPRESSION TREE: ',
-              evaluate_expression_tree(expression_tree_root))
+              truncate(evaluate_expression_tree(expression_tree_root)))
     except:
-        print('Invalid Expression',)
+        print('Invalid Expression')
 
 
 # evaluate_expression('(4-1)')
@@ -170,6 +179,8 @@ def evaluate_expression(expression):
 # evaluate_expression('(3 + 3) * 42 / (6 + 12)')
 # evaluate_expression('1*(2+3+4)')
 evaluate_expression('3 + 12 * 3 / 12')
+# evaluate_expression('3.3 + 12 * 3 / 12')
+
 
 # Error Cases:
 # evaluate_expression('4 (12E)')
