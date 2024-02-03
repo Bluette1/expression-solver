@@ -22,7 +22,8 @@ def evaluate_expression_tree(root):
     left_side = evaluate_expression_tree(root.left_child)
     right_side = evaluate_expression_tree(root.right_child)
 
-    return evaluate([left_side, right_side], root.value) # Solution to the infix expression
+    # Solution to the infix expression
+    return evaluate([left_side, right_side], root.value)
 
 
 # Inorder traversal gives infix expression
@@ -113,7 +114,7 @@ def convert_infix_to_postfix(expression):
             postfix.append(expression[idx:next])  # add it to postfix
         else:  # is an operator
             current = expression[idx]
-            if(len(stack) == 0): 
+            if(len(stack) == 0):
                 stack.append(current)
             elif current == ')':
                 while len(stack) != 0 and stack[-1] != '(':
