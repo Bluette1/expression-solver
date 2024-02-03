@@ -16,7 +16,8 @@ def evaluate_expression_tree(root):
     return int(evaluate([left_side, right_side], root.value))
 
 
-def print_expression_tree(root, str=[]):  # Inorder traversal gives infix expression
+# Inorder traversal gives infix expression
+def print_expression_tree(root, str=[]):
     if (root != None):
         if root.left_child:
             str = str + print_expression_tree(root.left_child, [])
@@ -93,8 +94,6 @@ def convert_infix_to_postfix(expression):
     stack = []
     next = 0
 
-    # try:
-    expression = ''.join(expression.split(' '))
     for idx in range(len(expression)):
         if (next > idx):
             continue
@@ -126,11 +125,32 @@ def convert_infix_to_postfix(expression):
     return postfix
 
 
+def check_operators(expression):
+    valid_operators = ['/', '*', '+', '-']
+
+    contains_a_valid_operator = False
+    contains_an_invalid_operator = False
+
+    for idx in range(len(expression)):
+        if (expression[idx].isnumeric()):
+            continue
+        else:
+            if (expression[idx] != '(' and expression[idx] != ')' and expression[idx] not in valid_operators):
+                contains_an_invalid_operator = True
+            if (expression[idx] in valid_operators):
+                contains_a_valid_operator = True
+
+    if contains_a_valid_operator == False or contains_an_invalid_operator == True:
+        raise Exception
+
+
 def evaluate_expression(expression):
+    expression = ''.join(expression.split(' '))
 
     try:
+        check_operators(expression)
         postfix = convert_infix_to_postfix(expression)
-        
+
         print('Postfix: ', postfix)
 
         print('SOLUTION STACK: ', solve_postfix_using_stack(' '.join(postfix)))
@@ -138,7 +158,8 @@ def evaluate_expression(expression):
         expression_tree_root = build_expression_tree(' '.join(postfix))
 
         # print('Expression Tree Infix: ', ' '.join(print_expression_tree(expression_tree_root, [])))
-        print('SOLUTION EXPRESSION TREE: ', evaluate_expression_tree(expression_tree_root))
+        print('SOLUTION EXPRESSION TREE: ',
+              evaluate_expression_tree(expression_tree_root))
     except:
         print('Invalid Expression',)
 
