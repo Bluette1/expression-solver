@@ -63,7 +63,7 @@ Python
 
 Contributions, issues and feature requests are welcome!
 
-Feel free to check the [issues page](https://github.com/Bluette1/auth-app/issues).
+Feel free to check the [issues page](https://github.com/Bluette1/expression-solver/issues).
 
 ## Show your support
 
